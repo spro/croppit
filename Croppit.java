@@ -141,6 +141,9 @@ public class Croppit {
             os.close();
             tmp.close();
 
+            // Increment
+            ++n_reqs;
+
         }
     }
 
@@ -149,7 +152,7 @@ public class Croppit {
 
             // Create status JSON
             JsonObject status = new JsonObject();
-            status.addProperty("n_reqs", ++n_reqs);
+            status.addProperty("n_reqs", n_reqs);
             String out = new GsonBuilder().create().toJson(status);
 
             // Write response
