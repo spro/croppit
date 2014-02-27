@@ -16,18 +16,26 @@ import com.sun.net.httpserver.Headers;
 // http://github.com/thebuzzmedia/imgscalr
 import org.imgscalr.Scalr;
 
+// Gson does JSON serialization
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
+
 public class Croppit {
 
-    static int PORT = 8050;
+    static int PORT = 2450;
     static int THREADS = 10;
     static int DEFAULT_W = 640;
     static int DEFAULT_H = 200;
+
+    static int n_reqs = 0;
 
     public static void main(String[] args) throws Exception {
 
         // Launch the server on PORT, listening for requests to /crop
         HttpServer server = HttpServer.create(new InetSocketAddress(PORT), 0);
         server.createContext("/crop", new CroppitHandler());
+        server.createContext("/status.json", new CroppitStatusHandler());
         server.setExecutor(Executors.newFixedThreadPool(THREADS));
         server.start();
 
@@ -133,6 +141,24 @@ public class Croppit {
             os.close();
             tmp.close();
 
+        }
+    }
+
+    static class CroppitStatusHandler implements HttpHandler {
+        public void handle(HttpExchange t) throws IOException {
+
+            // Create status JSON
+            JsonObject status = new JsonObject();
+            status.addProperty("n_reqs", ++n_reqs);
+            String out = new GsonBuilder().create().toJson(status);
+
+            // Write response
+            t.sendResponseHeaders(200, out.length());
+            OutputStream os = t.getResponseBody();
+            os.write(out.getBytes());
+
+            // Clean up
+            os.close();
         }
     }
 }
