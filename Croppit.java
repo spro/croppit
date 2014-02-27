@@ -19,6 +19,7 @@ import org.imgscalr.Scalr;
 // Gson does JSON serialization
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 public class Croppit {
@@ -152,7 +153,11 @@ public class Croppit {
 
             // Create status JSON
             JsonObject status = new JsonObject();
+            JsonObject memory = new JsonObject();
+            JsonArray loads = new JsonArray();
             status.addProperty("n_reqs", n_reqs);
+            status.add("memory", memory);
+            status.add("loads", loads);
             String out = new GsonBuilder().create().toJson(status);
 
             // Write response
