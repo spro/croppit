@@ -34,8 +34,8 @@ public class Croppit {
 
         // Launch the server on PORT, listening for requests to /crop
         HttpServer server = HttpServer.create(new InetSocketAddress(PORT), 0);
-        server.createContext("/crop", new CroppitHandler());
-        server.createContext("/status.json", new CroppitStatusHandler());
+        server.createContext("/", new CroppitHandler());
+        server.createContext("/status", new CroppitStatusHandler());
         server.setExecutor(Executors.newFixedThreadPool(THREADS));
         server.start();
 
