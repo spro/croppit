@@ -45,7 +45,7 @@ server = http.createServer (req, res) ->
                     res.end ''
 
                 else
-                    sharp.resize image_body, sharp.buffer.jpeg, crop_width, crop_height, (err, buffer) ->
+                    sharp(image_body).resize(crop_width, crop_height).toBuffer (err, buffer) ->
                         response = null # Clear!
                         image_body = null # Clear!
                         if err
