@@ -5,8 +5,9 @@ util = require 'util'
 sharp = require 'sharp'
 request = require('request').defaults({ encoding: null })
 
-DEFAULT_CROP_WIDTH = 640
-DEFAULT_CROP_HEIGHT = 200
+DEFAULT_CROP_WIDTH = 250
+DEFAULT_CROP_HEIGHT = null
+DEFAULT_CROP_GRAVITY = 'north'
 
 config =
     PORT: 2450
@@ -26,8 +27,9 @@ server = http.createServer (req, res) ->
 
     else
         url_parts = url.parse req.url, true
-        crop_width = url_parts.query.w or DEFAULT_CROP_WIDTH
-        crop_height = url_parts.query.h or DEFAULT_CROP_HEIGHT
+        crop_width = Number(url_parts.query.width) or DEFAULT_CROP_WIDTH
+        crop_height = Number(url_parts.query.height) or DEFAULT_CROP_HEIGHT
+        crop_gravity = url_parts.query.gravity or DEFAULT_CROP_GRAVITY
         image_url = url_parts.query.url
 
         # Make sure the URL seems like an image
@@ -45,7 +47,10 @@ server = http.createServer (req, res) ->
                     res.end ''
 
                 else
-                    sharp(image_body).resize(crop_width, crop_height).toBuffer (err, buffer) ->
+                    sharp(image_body)
+                    .resize(crop_width, crop_height)
+                    .crop(sharp.gravity[crop_gravity])
+                    .toBuffer (err, buffer) ->
                         response = null # Clear!
                         image_body = null # Clear!
                         if err
